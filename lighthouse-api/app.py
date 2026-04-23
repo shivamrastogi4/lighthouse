@@ -85,7 +85,6 @@ def lighthouse_api():
     return jsonify({
         "url": url,
         "mode": mode,
-        "status": website_status,
         "lighthouse": lighthouse_result,
         "note": "Defaulted to mobile" if "mode" not in request.args else ""
     })
