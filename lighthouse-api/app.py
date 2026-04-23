@@ -14,7 +14,7 @@ def run_lighthouse(url, retries=3):
     params = [
         ("url", url),
         ("key", GOOGLE_API_KEY),
-        ("strategy", "mobile"),
+        ("strategy", mode),
         ("category", "performance"),
         ("category", "accessibility"),
         ("category", "best-practices"),
@@ -24,7 +24,6 @@ def run_lighthouse(url, retries=3):
     for attempt in range(retries):
         try:
             response = requests.get(api_url, params=params, timeout=(10, 60))
-
             if response.status_code == 200:
                 data = response.json()
                 lighthouse = data.get("lighthouseResult", {})
@@ -66,14 +65,19 @@ def home():
 @app.route("/lighthouse", methods=["GET"])
 def lighthouse_api():
     url = request.args.get("url")
-
+    mode = request.args.get("mode", "mobile").lower()
     if not url:
         return jsonify({"error": "Missing 'url' parameter"}), 400
+    
+    if mode not in ["mobile", "desktop"]:
+        return jsonify({
+            "error": "Invalid mode. Use 'mobile' or 'desktop'"
+        }), 400
+
 
     if not url.startswith("http"):
         url = "https://" + url
-
-    lighthouse_result = run_lighthouse(url)
+    lighthouse_result = run_lighthouse(url,mode)
     website_status = check_website(url)
 
     if "error" in lighthouse_result:
@@ -81,8 +85,10 @@ def lighthouse_api():
 
     return jsonify({
         "url": url,
+        "mode": mode,
         "status": website_status,
-        "lighthouse": lighthouse_result
+        "lighthouse": lighthouse_result,
+        "note": "Defaulted to mobile" if "mode" not in request.args else ""
     })
 
 
