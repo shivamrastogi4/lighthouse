@@ -78,7 +78,6 @@ def lighthouse_api():
     if not url.startswith("http"):
         url = "https://" + url
     lighthouse_result = run_lighthouse(url,mode)
-    website_status = check_website(url)
 
     if "error" in lighthouse_result:
         return jsonify(lighthouse_result), 500
