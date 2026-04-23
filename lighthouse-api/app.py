@@ -8,7 +8,7 @@ app = Flask(__name__)
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 
-def run_lighthouse(url, retries=3):
+def run_lighthouse(url,mode="mobile", retries=3):
     api_url = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
 
     params = [
